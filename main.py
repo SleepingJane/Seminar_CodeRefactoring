@@ -58,29 +58,22 @@ def createHash(triple_spectrogram, spectr_local_max, frecs, tims):
 
     return hashes
 
-
 def spectrogram(file):
     sample_rate, wav_file_data = wavfile.read(file)
-    mono_audio = stereoToMono(wav_file_data)
-    audio_data = mono_audio[0].tolist()
+    audio_data = stereoToMono(wav_file_data)[0].tolist()
 
     xextent_max = wav_file_data.shape[0] / sample_rate
     spectr, frecs, tims, img = plt.specgram(audio_data, Fs=sample_rate, xextent=(0, xextent_max))
     bandwidth = spectr[15:250]
     triple_spectrogram = np.argmax(bandwidth.transpose(), 1)
 
-    spectr_local_max = findLocalMaxSpectr(triple_spectrogram, bandwidth)
-    hashes = createHash(triple_spectrogram, spectr_local_max, frecs, tims)
-
-    return hashes
-
+    return createHash(triple_spectrogram, findLocalMaxSpectr(triple_spectrogram, bandwidth), frecs, tims)
 
 def readHash(hashes_file):
     hash_array = []
     line_counter = 0
 
     for line in hashes_file:
-
         hash_line = ''
         full_hash_line = ''
         flag_lineend = False
@@ -100,7 +93,6 @@ def readHash(hashes_file):
         line_counter += 1
     return hash_array
 
-
 def findMinimumConstellation(hash_array, element, spectr_time):
     max_gist = []
     min_constellation, constellation, gist_element = 0, 0, 0
@@ -108,7 +100,6 @@ def findMinimumConstellation(hash_array, element, spectr_time):
     flag_constellation = False
 
     while constellation < len(hash_array):
-
         if time_hash != 0:
             first_time_hash = time_hash
 
@@ -119,7 +110,6 @@ def findMinimumConstellation(hash_array, element, spectr_time):
                 flag_constellation = False
                 min_constellation = constellation
                 max_gist.append([])
-
             else:
                 if (not flag_constellation) and (spectr_time == time_hash):
                     max_gist[gist_element - 1][1] += 1
@@ -138,26 +128,19 @@ def findMinimumConstellation(hash_array, element, spectr_time):
 
 def main():
     c, i = 0, 1
-    file_name = "C:/Users/User/Desktop/mp3/5.wav"
-    folder_name = "C:/Users/User/Desktop/mp3/"
-    audio_spectr = spectrogram(file_name)
-
-    audio_list_size = 5
-
-    while i <= audio_list_size:
+    while i <= 5:
         max_gist = []
         min_s, j = 0, 0
-        hashes_file = open(folder_name + str(i) + '.txt', 'r')
-        hash_array = readHash(hashes_file)
+        hashes_file = open("C:/Users/User/Desktop/mp3/" + str(i) + '.txt', 'r')
 
         first_spectr_time = 0
         spectr_time = 0
 
-        for element in audio_spectr:
+        for element in spectrogram("C:/Users/User/Desktop/mp3/5.wav"):
             if spectr_time != 0:
                 first_spectr_time = spectr_time
             spectr_time = element[1]
-            max_gist = findMinimumConstellation(hash_array, element, spectr_time)
+            max_gist = findMinimumConstellation(readHash(hashes_file), element, spectr_time)
         i += 1
 
 main()
