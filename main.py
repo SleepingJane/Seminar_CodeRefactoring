@@ -18,14 +18,9 @@ def spectrogram(file):
     facecolor = '#D0ECE6'
     picname = "C:/Users/User/Desktop/mp3/sp.png"
     a = X.shape[0] / sample_rate
-    #    count = 0
-    #    count2 = 0
     spectr, frecs, tims, img = plt.specgram(A, Fs=sample_rate, xextent=(0, a))
-    #    plt.savefig(picname, facecolor=facecolor, bbox_inches="tight")
     band = spectr[15:250]
     sss = np.argmax(band.transpose(), 1)
-    #    f = open('C:/Users/User/Desktop/mp3/6.txt', 'w')
-    #    count = 0
     first_point = 0
     second_point = 0
     max_arr = []
@@ -48,8 +43,6 @@ def spectrogram(file):
                 max_arr.append(first_point)
             first_point = 0
             second_point = 0
-    #    for element in max_arr:
-    #        plt.plot(tims[element], frecs[sss[element]], "x")
     hashes = []
     for element in max_arr:
         element2 = len(max_arr) - 1
@@ -63,16 +56,12 @@ def spectrogram(file):
                             round(tims[max_arr[element2]] - tims[element], 3))
                 hashes.append([hash(one_hash), round(tims[element], 3)])
             element2 -= 1
-    #    for element in hashes:
-    #        f.write(str(element) + '\n')
-    #    plt.show()
     return hashes
 
 def main():
     c, i = 0, 1
     a = spectrogram("C:/Users/User/Desktop/mp3/5.wav")
 
-    #    max_i = 0
     while i <= 5:
         max_gist = []
         j = 0
@@ -96,7 +85,6 @@ def main():
             x[j].append(float(l1))
             l1 = ''
             j += 1
-        #    print(x)
         print('1')
         j = 0
         first_time_a = 0
@@ -109,7 +97,6 @@ def main():
                 time_a = element[1]
             first_time_x = 0
             time_x = 0
-            # for element2 in x:
             s = min_s
             flag_s = False
             while s < len(x):
@@ -120,9 +107,6 @@ def main():
                     time_x = x[s][1]
                     flag_c = True
                 if element[0] == x[s][0]:
-                    # index_max_gist = max_gist.index(element2[1])
-                    # if element2[1] not in max_gist[0]:
-                    # or ((time_a - first_time_a) == (time_x - first_time_x))
                     if len(max_gist) == 0:
                         min_s = s
                         max_gist.append([])
@@ -149,28 +133,7 @@ def main():
                         min_s = s
                         flag_s = True
                 s += 1
-
-                # else:
-                #    max_gist[max_gist.index(element2[1])][1] += 1
-        #        print(max_gist[:][0])
         print(max_gist)
-        # c += 1
-        #        if c > max_c:
-        #            max_c = c
-        #            max_i = i
-        #        print(c)
-        #        c = 0
-        #        x = []
         i += 1
-
-#    print('ss ' + str(max_c)+ ' ss ' + str(max_i))
-# b = spectrogram("C:/Users/User/Desktop/mp3/5.wav")
-# f = open('C:/Users/User/Desktop/mp3/1.txt', 'w')
-# for element in a:
-#    f.write(str(element) + '\n')
-# for element in b:
-#   if a.count(element) != 0:
-#        c += 1
-# print(c, len(a), len(b))
 
 main()
