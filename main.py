@@ -58,15 +58,22 @@ def createHash(triple_spectrogram, spectr_local_max, frecs, tims):
 
     return hashes
 
+def getBandwidth(spectr):
+    return spectr[15:250]
+
+def getXextent_max(wavFileData, sample_rate):
+    return wavFileData.shape[0] / sample_rate
+
+def getTripleSpectrogram(bandwidth):
+    return np.argmax(bandwidth.transpose(), 1)
+
 def spectrogram(file):
     sample_rate, wav_file_data = wavfile.read(file)
     audio_data = stereoToMono(wav_file_data)[0].tolist()
-
-    xextent_max = wav_file_data.shape[0] / sample_rate
+    xextent_max = getXextent_max(wav_file_data, sample_rate)
     spectr, frecs, tims, img = plt.specgram(audio_data, Fs=sample_rate, xextent=(0, xextent_max))
-    bandwidth = spectr[15:250]
-    triple_spectrogram = np.argmax(bandwidth.transpose(), 1)
-
+    bandwidth = getBandwidth(spectr)
+    triple_spectrogram = getTripleSpectrogram(bandwidth)
     return createHash(triple_spectrogram, findLocalMaxSpectr(triple_spectrogram, bandwidth), frecs, tims)
 
 def readHash(hashes_file):
@@ -89,7 +96,6 @@ def readHash(hashes_file):
             if flag_lineend:
                 full_hash_line += string
         hash_array[line_counter].append(float(full_hash_line))
-        full_hash_line = ''
         line_counter += 1
     return hash_array
 
